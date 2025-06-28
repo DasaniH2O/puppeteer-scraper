@@ -1,43 +1,46 @@
+// index.js — Firecrawl-style Puppeteer Scraper with Bright Data support
+require('dotenv').config();
 const express = require('express');
 const puppeteer = require('puppeteer');
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get('/scrape', async (req, res) => {
-  const targetUrl = req.query.url;
-  if (!targetUrl) {
-    return res.status(400).json({ error: 'URL is required as a query parameter: ?url=' });
-  }
+app.use(express.json());
 
+app.post('/scrape', async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'URL required' });
+
+  let browser;
   try {
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       headless: true,
       args: [
-        `--proxy-server=http=${process.env.PROXY_HOST}:${process.env.PROXY_PORT}`
+        `--proxy-server=http://${process.env.BRIGHTDATA_PROXY_HOST}:${process.env.BRIGHTDATA_PROXY_PORT}`,
+        '--no-sandbox',
+        '--disable-setuid-sandbox'
       ]
     });
 
     const page = await browser.newPage();
-
     await page.authenticate({
-      username: process.env.PROXY_USERNAME,
-      password: process.env.PROXY_PASSWORD,
+      username: process.env.BRIGHTDATA_PROXY_USER,
+      password: process.env.BRIGHTDATA_PROXY_PASS
     });
 
-    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
     const html = await page.content();
     await browser.close();
 
-    res.status(200).send(html);
-  } catch (error) {
-    console.error('Scraping failed:', error.message);
-    res.status(500).json({ error: 'Scraping failed', details: error.message });
+    res.status(200).json({ html });
+  } catch (err) {
+    if (browser) await browser.close();
+    res.status(500).json({ error: 'Failed to scrape', details: err.message });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Scraper running on http://localhost:${PORT}`);
 });
