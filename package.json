@@ -1,15 +1,17 @@
 {
-    "name": "puppeteer-scraper",
-    "version": "1.0.0",
-    "description": "A Puppeteer scraper with Bright Data proxy support.",
-    "main": "index.js",
-    "scripts": {
-      "start": "node index.js"
-    },
-    "dependencies": {
-      "dotenv": "^16.3.1",
-      "express": "^4.18.2",
-      "puppeteer": "^21.3.8"
-    }
+  "name": "puppeteer-scraper",
+  "version": "1.0.0",
+  "description": "A headless scraper using Puppeteer and Bright Data proxy",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "puppeteer": "^21.3.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
-  
+}
