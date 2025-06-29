@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Stealth Puppeteer scraper with Bright Data proxy support",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
@@ -16,7 +17,7 @@
   "engines": {
     "node": ">=18"
   },
-  "type": "module",
-  "author": "PhaseLink",
+  "keywords": [],
+  "author": "",
   "license": "MIT"
 }
